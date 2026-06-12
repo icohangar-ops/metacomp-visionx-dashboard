@@ -158,7 +158,7 @@ src/
 
 ```bash
 # Clone the repository
-git clone https://github.com/Cubiczan/metacomp-visionx-dashboard.git
+git clone https://github.com/icohangar-ops/metacomp-visionx-dashboard.git
 cd metacomp-visionx-dashboard
 
 # Install dependencies
