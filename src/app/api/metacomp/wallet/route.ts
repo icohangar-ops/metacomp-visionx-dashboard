@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { safeFetch } from "@/lib/resilience";
+import { guardProxyRequest } from "@/lib/resilience/proxyGuard";
 
 const METACOMP_BASE = "https://www.metacomp.ai";
 const METACOMP_API_KEY = process.env.METACOMP_API_KEY ?? "";
 
 export async function POST(request: NextRequest) {
+  const denied = guardProxyRequest(request);
+  if (denied) return denied;
+
   try {
     const body = await request.json();
     const { network, address } = body;
@@ -15,8 +20,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${METACOMP_BASE}/api/v1/walletCheck`, {
+    const response = await safeFetch(`${METACOMP_BASE}/api/v1/walletCheck`, {
       method: "POST",
+      timeoutMs: 15_000,
+      allowlist: ["www.metacomp.ai"],
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${METACOMP_API_KEY}`,
