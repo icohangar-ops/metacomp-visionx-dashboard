@@ -164,25 +164,24 @@ cd metacomp-visionx-dashboard
 # Install dependencies
 npm install
 
-# Configure environment
-echo "NEXT_PUBLIC_METACOMP_API_URL=https://www.metacomp.ai" > .env.local
+# Configure environment (see .env.example)
+cp .env.example .env.local
 ```
 
-### Configure API Key
+### Configure Environment Variables
 
-Add your MetaComp API key to the wallet API route:
+Secrets are read server-side from environment variables — never hardcode them in source. Set the following in `.env.local` (and in your deployment's secret store for production):
 
-**`src/app/api/metacomp/wallet/route.ts`**
-```typescript
-const METACOMP_API_KEY = 'sk-your-api-key-here';
+```bash
+# MetaComp Vision X API key (server-side only; never exposed to the browser)
+METACOMP_API_KEY=your-metacomp-api-key
+
+# Shared secret callers must send as the x-proxy-secret header to reach
+# the /api/metacomp/* proxy routes. The proxy fails closed if this is unset.
+PROXY_API_SECRET=your-proxy-secret
 ```
 
-**`src/app/api/metacomp/transaction/route.ts`**
-```typescript
-const METACOMP_API_KEY = 'sk-your-api-key-here';
-```
-
-> The API key is stored server-side only and never exposed to the browser.
+> Both values are stored server-side only and are never exposed to the browser. The proxy routes (`src/app/api/metacomp/*`) read them via `process.env`.
 
 ### Run Development Server
 
